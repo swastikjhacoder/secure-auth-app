@@ -22,7 +22,7 @@ export default async function DashboardPage() {
 
   await connectDB();
 
-  const user = await User.findById(decoded.userId).select("-password");
+  const user = await User.findById(decoded.id).select("-password");
 
   if (!user) {
     redirect("/login");
