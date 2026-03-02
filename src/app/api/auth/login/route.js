@@ -6,10 +6,34 @@ import { loginSchema } from "@/lib/validation";
 import { sanitizeInput } from "@/lib/sanitize";
 import { signToken } from "@/lib/auth";
 import { encrypt } from "@/lib/crypto";
+import { rateLimit } from "@/lib/rateLimit";
+
+function getClientIP(req) {
+  const forwarded = req.headers.get("x-forwarded-for");
+  if (forwarded) {
+    return forwarded.split(",")[0].trim();
+  }
+  return req.headers.get("x-real-ip") || "unknown";
+}
 
 export async function POST(req) {
   try {
     await connectDB();
+
+    const ip = getClientIP(req);
+
+    const limiter = await rateLimit({
+      key: `login-${ip}`,
+      limit: 5,
+      windowMs: 60_000,
+    });
+
+    if (!limiter.success) {
+      return NextResponse.json(
+        { error: "Too many login attempts. Try again later." },
+        { status: 429 },
+      );
+    }
 
     let body = await req.json();
     body = sanitizeInput(body);
@@ -27,14 +51,14 @@ export async function POST(req) {
 
     if (user.lockUntil && user.lockUntil > Date.now()) {
       return NextResponse.json(
-        { error: "Account locked. Try later." },
+        { error: "Account locked. Try again later." },
         { status: 403 },
       );
     }
 
-    const match = await bcrypt.compare(password, user.password);
+    const isMatch = await bcrypt.compare(password, user.password);
 
-    if (!match) {
+    if (!isMatch) {
       user.loginAttempts += 1;
 
       if (user.loginAttempts >= 5) {
@@ -50,6 +74,7 @@ export async function POST(req) {
     }
 
     user.loginAttempts = 0;
+    user.lockUntil = undefined;
     await user.save();
 
     const rawToken = signToken(user._id.toString());
@@ -66,8 +91,9 @@ export async function POST(req) {
     });
 
     return response;
-  } catch (err) {
-    console.error("LOGIN ERROR:", err);
+  } catch (error) {
+    console.error("LOGIN ERROR:", error);
+
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }
