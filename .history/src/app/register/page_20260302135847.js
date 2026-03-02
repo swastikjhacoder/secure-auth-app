@@ -24,14 +24,10 @@ export default function RegisterPage() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-
-    console.log("HANDLE SUBMIT CALLED");
-
     setError("");
 
     if (form.password !== form.confirmPassword) {
-      setError("Passwords do not match");
-      return;
+      return setError("Passwords do not match");
     }
 
     try {
@@ -49,8 +45,6 @@ export default function RegisterPage() {
       });
 
       const data = await res.json();
-
-      console.log("API RESPONSE:", data);
 
       if (!res.ok) {
         throw new Error(data.error || "Registration failed");

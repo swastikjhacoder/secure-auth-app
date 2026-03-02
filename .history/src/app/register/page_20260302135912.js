@@ -25,7 +25,7 @@ export default function RegisterPage() {
   async function handleSubmit(e) {
     e.preventDefault();
 
-    console.log("HANDLE SUBMIT CALLED");
+    console.log("HANDLE SUBMIT CALLED"); // debug
 
     setError("");
 
