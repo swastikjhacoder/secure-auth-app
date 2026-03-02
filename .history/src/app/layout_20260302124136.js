@@ -21,7 +21,7 @@ export const metadata = {
   description: "Production-grade secure authentication system",
   metadataBase: new URL("http://localhost:3000"),
   robots: {
-    index: false,
+    index: false, // change to true in production
     follow: false,
   },
 };

@@ -9,9 +9,17 @@ const nextConfig = {
         headers: [
           { key: "X-Frame-Options", value: "DENY" },
           { key: "X-Content-Type-Options", value: "nosniff" },
+
+          // Strict referrer policy
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+
+          // Disable DNS prefetching
           { key: "X-DNS-Prefetch-Control", value: "off" },
+
+          // Basic XSS protection (legacy browsers)
           { key: "X-XSS-Protection", value: "1; mode=block" },
+
+          // Content Security Policy (VERY IMPORTANT)
           {
             key: "Content-Security-Policy",
             value: `

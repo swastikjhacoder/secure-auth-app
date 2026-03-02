@@ -12,6 +12,8 @@ const nextConfig = {
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "X-DNS-Prefetch-Control", value: "off" },
           { key: "X-XSS-Protection", value: "1; mode=block" },
+
+          // Content Security Policy (VERY IMPORTANT)
           {
             key: "Content-Security-Policy",
             value: `

@@ -16,12 +16,14 @@ export default function Home() {
           </p>
         </div>
 
+        {/* ================= FEATURE CARDS ================= */}
         <div className="grid gap-10 md:grid-cols-2">
+          {/* Security Card */}
           <div className="h-full rounded-2xl border border-border bg-card shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
             <div className="p-10 space-y-6">
               <h3 className="text-2xl font-semibold">Security Layers</h3>
 
-              <ul className="pl-2 space-y-4 text-gray-600 dark:text-gray-400 leading-relaxed">
+              <ul className="space-y-4 text-gray-600 dark:text-gray-400 leading-relaxed">
                 <li>• JWT in httpOnly secure cookies</li>
                 <li>• Strict Content Security Policy</li>
                 <li>• NoSQL injection prevention</li>
@@ -31,11 +33,12 @@ export default function Home() {
             </div>
           </div>
 
+          {/* Architecture Card */}
           <div className="h-full rounded-2xl border border-border bg-card shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
             <div className="p-10 space-y-6">
               <h3 className="text-2xl font-semibold">Architecture</h3>
 
-              <ul className="pl-2 space-y-4 text-gray-600 dark:text-gray-400 leading-relaxed">
+              <ul className="space-y-4 text-gray-600 dark:text-gray-400 leading-relaxed">
                 <li>• Next.js App Router</li>
                 <li>• MongoDB Strict Schema Mode</li>
                 <li>• Middleware Route Protection</li>
@@ -46,6 +49,7 @@ export default function Home() {
           </div>
         </div>
 
+        {/* ================= CTA SECTION ================= */}
         <div className="flex flex-col sm:flex-row justify-center items-center gap-6 pt-10 border-t border-border">
           <Link
             href="/login"
