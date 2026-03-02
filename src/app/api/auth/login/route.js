@@ -5,7 +5,6 @@ import User from "@/models/User";
 import { loginSchema } from "@/lib/validation";
 import { sanitizeInput } from "@/lib/sanitize";
 import { signToken } from "@/lib/auth";
-import { cookies } from "next/headers";
 
 export async function POST(req) {
   try {
@@ -18,7 +17,12 @@ export async function POST(req) {
 
     const user = await User.findOne({ email });
 
-    if (!user) throw new Error();
+    if (!user) {
+      return NextResponse.json(
+        { error: "Invalid credentials" },
+        { status: 401 },
+      );
+    }
 
     if (user.lockUntil && user.lockUntil > Date.now()) {
       return NextResponse.json(
@@ -37,7 +41,11 @@ export async function POST(req) {
       }
 
       await user.save();
-      throw new Error();
+
+      return NextResponse.json(
+        { error: "Invalid credentials" },
+        { status: 401 },
+      );
     }
 
     user.loginAttempts = 0;
@@ -45,15 +53,19 @@ export async function POST(req) {
 
     const token = signToken(user._id.toString());
 
-    cookies().set("token", token, {
+    const response = NextResponse.json({ success: true });
+
+    response.cookies.set("token", token, {
       httpOnly: true,
-      secure: true,
-      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
       maxAge: 60 * 15,
+      path: "/",
     });
 
-    return NextResponse.json({ success: true });
-  } catch {
-    return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+    return response;
+  } catch (err) {
+    console.error("LOGIN ERROR:", err);
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }
