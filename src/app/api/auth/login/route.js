@@ -5,6 +5,7 @@ import User from "@/models/User";
 import { loginSchema } from "@/lib/validation";
 import { sanitizeInput } from "@/lib/sanitize";
 import { signToken } from "@/lib/auth";
+import { encrypt } from "@/lib/crypto";
 
 export async function POST(req) {
   try {
@@ -51,11 +52,12 @@ export async function POST(req) {
     user.loginAttempts = 0;
     await user.save();
 
-    const token = signToken(user._id.toString());
+    const rawToken = signToken(user._id.toString());
+    const encryptedToken = encrypt(rawToken);
 
     const response = NextResponse.json({ success: true });
 
-    response.cookies.set("token", token, {
+    response.cookies.set("token", encryptedToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",

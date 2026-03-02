@@ -3,10 +3,23 @@ import { redirect } from "next/navigation";
 import jwt from "jsonwebtoken";
 import { connectDB } from "@/lib/db";
 import User from "@/models/User";
+import { decrypt } from "@/lib/crypto";
 
 export default async function DashboardPage() {
   const cookieStore = await cookies();
-  const token = cookieStore.get("token")?.value;
+  const encryptedToken = cookieStore.get("token")?.value;
+
+  if (!encryptedToken) {
+    redirect("/login");
+  }
+
+  let token;
+
+  try {
+    token = decrypt(encryptedToken);
+  } catch {
+    redirect("/login");
+  }
 
   if (!token) {
     redirect("/login");
