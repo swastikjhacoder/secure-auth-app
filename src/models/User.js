@@ -1,5 +1,27 @@
 import mongoose from "mongoose";
 
+const credentialSchema = new mongoose.Schema(
+  {
+    credentialID: {
+      type: Buffer,
+      required: true,
+    },
+    publicKey: {
+      type: Buffer,
+      required: true,
+    },
+    counter: {
+      type: Number,
+      required: true,
+    },
+    transports: {
+      type: [String],
+      default: [],
+    },
+  },
+  { _id: false },
+);
+
 const userSchema = new mongoose.Schema(
   {
     email: {
@@ -8,15 +30,15 @@ const userSchema = new mongoose.Schema(
       unique: true,
       index: true,
     },
-    password: {
+
+    credentials: {
+      type: [credentialSchema],
+      default: [],
+    },
+
+    currentChallenge: {
       type: String,
-      required: true,
     },
-    loginAttempts: {
-      type: Number,
-      default: 0,
-    },
-    lockUntil: Number,
   },
   {
     strict: "throw",
